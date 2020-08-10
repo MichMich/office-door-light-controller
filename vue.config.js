@@ -3,9 +3,7 @@ module.exports = {
     electronBuilder: {
       nodeIntegration: true,
       builderOptions: {
-        directories: {
-          buildResources: 'assets'
-        }
+
       }
     }
   }

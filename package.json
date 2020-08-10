@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service electron:serve",
     "build": "vue-cli-service electron:build",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
@@ -16,7 +16,6 @@
   "main": "background.js",
   "dependencies": {
     "core-js": "^3.6.5",
-    "electron-serve": "^1.0.0",
     "menubar": "^9.0.1",
     "tailwindcss": "^1.6.2",
     "vue": "^2.6.11"
