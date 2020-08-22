@@ -13,6 +13,7 @@ const mb = menubar({
   icon: path.join(__static, 'icons/off.png'),
   index: false,
   browserWindow: {
+    alwaysOnTop: true,
     height: 250,
     resizable: false,
     width: 250,
@@ -48,7 +49,27 @@ mb.on('after-create-window', async () => {
     mb.window.loadURL('app://./index.html')
   }
 
+  mb.on('after-hide', async () => {
+    mb.window.webContents.send('hide')
+  })
+
   ipc.on('state', function (event, state) {
     setIcon(state)
   })
+
+  ipc.on('show', function (event) {
+    mb.showWindow()
+  })
+
+  ipc.on('hide', function (event) {
+    mb.hideWindow()
+  })
+
+  ipc.on('log', function (event, payload) {
+    console.log(payload)
+  })
+})
+
+mb.on('ready', () => {
+  mb.showWindow()
 })

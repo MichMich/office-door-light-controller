@@ -13,10 +13,14 @@
 
 const { ipcRenderer } = require('electron')
 
+const TIMER_DURATION_RED = 30 * 60 * 1000
+const TIMER_DURATION_ORANGE = 120 * 60 * 1000
+
 export default {
   data () {
     return {
       url: 'http://192.168.1.123',
+      timer: null,
       state: {
         red: false,
         orage: false,
@@ -27,10 +31,16 @@ export default {
   watch: {
     state: {
       deep: true,
-      handler: (state) => {
+      handler: function (state, oldState) {
         ipcRenderer.send('state', state)
+        if (this.changed(state, oldState)) {
+          this.show()
+        }
       }
     }
+  },
+  created () {
+    ipcRenderer.on('hide', this.setTimer)
   },
   mounted () {
     this.getState()
@@ -50,7 +60,35 @@ export default {
         body: JSON.stringify(state)
       })
         .then(response => response.json())
-        .then(data => { this.state = data })
+        .then(data => {
+          this.state = data
+          setTimeout(this.hide, 500)
+        })
+    },
+    changed (state, oldState) {
+      if (state.red === oldState.red && state.orange === oldState.orange && state.green === oldState.green) return null
+
+      return {
+        red: state.red !== oldState.red,
+        orange: state.orange !== oldState.orange,
+        green: state.green !== oldState.green
+      }
+    },
+    setTimer () {
+      if (this.state.red) {
+        this.timer = setTimeout(this.show, TIMER_DURATION_RED)
+      } else if (this.state.orange) {
+        this.timer = setTimeout(this.show, TIMER_DURATION_ORANGE)
+      } else {
+        clearTimeout(this.timer)
+        this.timer = null
+      }
+    },
+    show () {
+      ipcRenderer.send('show')
+    },
+    hide () {
+      ipcRenderer.send('hide')
     }
   }
 }
